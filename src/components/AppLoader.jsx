@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
-import { Plane, MapPin, Sparkles } from 'lucide-react';
+import { useEffect, useId, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plane, MapPin, Sparkles, X, AlertTriangle } from 'lucide-react';
 
 const DOTS = [
   { id: 0, x: 12, y: 18, size: 4, delay: 0, duration: 3 },
@@ -71,20 +72,18 @@ function TitleLine({ tagline }) {
   );
 }
 
-export default function AppLoader({
-  title = 'TrripAi',
-  tagline = 'AI Travel Planner',
-  subtitle = 'Preparing your intelligent travel experience',
-  fullScreen = true,
+function LoaderVisual({
+  title,
+  tagline,
+  subtitle,
+  subtitleKey,
+  routeGradId,
+  animateTitle = true,
 }) {
   const chars = title.split('');
-  const wrapperClass = fullScreen
-    ? 'fixed inset-0 z-[100] flex items-center justify-center overflow-hidden'
-    : 'relative flex items-center justify-center py-20 overflow-hidden';
 
   return (
-    <div className={wrapperClass} style={{ background: 'rgb(var(--color-bg))' }}>
-      {/* Aurora mesh */}
+    <>
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
           className="absolute -top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full opacity-40"
@@ -124,10 +123,9 @@ export default function AppLoader({
         ))}
       </div>
 
-      {/* Animated route paths */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
         <defs>
-          <linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={routeGradId} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#6366F1" stopOpacity="0" />
             <stop offset="50%" stopColor="#6366F1" />
             <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
@@ -136,7 +134,7 @@ export default function AppLoader({
         <motion.path
           d="M 0 72 Q 30 38, 55 58 T 100 32"
           fill="none"
-          stroke="url(#routeGrad)"
+          stroke={`url(#${routeGradId})`}
           strokeWidth="0.4"
           strokeDasharray="2 3"
           initial={{ pathLength: 0, opacity: 0 }}
@@ -172,9 +170,7 @@ export default function AppLoader({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Spinner + logo */}
         <div className="relative w-32 h-32 mb-7">
-          {/* Outer glow ring */}
           <motion.div
             className="absolute inset-0 rounded-full"
             style={{
@@ -187,14 +183,12 @@ export default function AppLoader({
             <div className="w-full h-full rounded-full" style={{ background: 'rgb(var(--color-bg))' }} />
           </motion.div>
 
-          {/* Counter-rotating dashed ring */}
           <motion.div
             className="absolute inset-1.5 rounded-full border border-dashed border-primary/30"
             animate={{ rotate: -360 }}
             transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
           />
 
-          {/* Inner glass square */}
           <motion.div
             className="absolute inset-4 rounded-2xl border border-primary/20"
             style={{
@@ -214,7 +208,6 @@ export default function AppLoader({
             </motion.div>
           </div>
 
-          {/* Orbiting icons */}
           <motion.div
             className="absolute inset-0"
             animate={{ rotate: 360 }}
@@ -231,16 +224,15 @@ export default function AppLoader({
           </motion.div>
         </div>
 
-        {/* Staggered brand title */}
         <h1 className="text-4xl sm:text-[2.75rem] font-bold tracking-tight mb-1 flex justify-center">
           {(chars.length ? chars : TITLE_CHARS).map((char, i) => (
             <motion.span
               key={`${char}-${i}`}
               className={char === ' ' ? 'w-2' : 'gradient-text inline-block'}
-              initial={{ opacity: 0, y: 16, filter: 'blur(8px)' }}
+              initial={animateTitle ? { opacity: 0, y: 16, filter: 'blur(8px)' } : false}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{
-                delay: 0.1 + i * 0.06,
+                delay: animateTitle ? 0.1 + i * 0.06 : 0,
                 duration: 0.5,
                 ease: [0.22, 1, 0.36, 1],
               }}
@@ -252,16 +244,19 @@ export default function AppLoader({
 
         <TitleLine tagline={tagline} />
 
-        <motion.p
-          className="text-text-secondary text-sm sm:text-[15px] max-w-[260px] leading-relaxed"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.75, duration: 0.5 }}
-        >
-          {subtitle}
-        </motion.p>
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={subtitleKey ?? subtitle}
+            className="text-text-secondary text-sm sm:text-[15px] max-w-[260px] leading-relaxed min-h-[44px]"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.35 }}
+          >
+            {subtitle}
+          </motion.p>
+        </AnimatePresence>
 
-        {/* Shimmer progress track */}
         <motion.div
           className="mt-8 w-full max-w-[200px] h-1 rounded-full overflow-hidden bg-surface-2/40 border border-border/50"
           initial={{ opacity: 0 }}
@@ -287,6 +282,155 @@ export default function AppLoader({
           ))}
         </div>
       </motion.div>
+    </>
+  );
+}
+
+export default function AppLoader({
+  title = 'TrripAi',
+  tagline = 'AI Travel Planner',
+  subtitle = 'Preparing your intelligent travel experience',
+  subtitles,
+  subtitleInterval = 4500,
+  fullScreen = true,
+  overlay = false,
+  contained = false,
+  embedded = false,
+  onCancel,
+  footerHint,
+  animateTitle = true,
+}) {
+  const routeGradId = useId().replace(/:/g, '');
+  const [subtitleIndex, setSubtitleIndex] = useState(0);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+
+  const cyclingSubtitles = subtitles?.length ? subtitles : null;
+  const activeSubtitle = cyclingSubtitles
+    ? cyclingSubtitles[subtitleIndex]
+    : subtitle;
+
+  useEffect(() => {
+    if (!subtitles?.length) return undefined;
+    setSubtitleIndex(0);
+    const timer = setInterval(() => {
+      setSubtitleIndex((i) => (i < subtitles.length - 1 ? i + 1 : i));
+    }, subtitleInterval);
+    return () => clearInterval(timer);
+  }, [subtitles, subtitleInterval]);
+
+  const handleConfirmCancel = () => {
+    setShowCancelConfirm(false);
+    onCancel?.();
+  };
+
+  let wrapperClass = 'flex items-center justify-center overflow-hidden';
+  if (embedded) {
+    wrapperClass = `relative w-full h-full ${wrapperClass}`;
+  } else if (overlay) {
+    wrapperClass = `${contained ? 'absolute' : 'fixed'} inset-0 z-30 ${wrapperClass}`;
+  } else if (fullScreen) {
+    wrapperClass = `fixed inset-0 z-[100] ${wrapperClass}`;
+  } else {
+    wrapperClass = `relative py-20 ${wrapperClass}`;
+  }
+
+  const backgroundStyle = overlay
+    ? undefined
+    : { background: 'rgb(var(--color-bg))' };
+
+  return (
+    <div className={wrapperClass} style={backgroundStyle}>
+      {overlay && (
+        <motion.div
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          style={{
+            background: 'rgb(var(--color-bg) / 0.35)',
+            backdropFilter: 'blur(20px) saturate(1.3)',
+            WebkitBackdropFilter: 'blur(20px) saturate(1.3)',
+          }}
+        />
+      )}
+
+      <div className="relative w-full h-full flex items-center justify-center">
+        <LoaderVisual
+          title={title}
+          tagline={tagline}
+          subtitle={activeSubtitle}
+          subtitleKey={cyclingSubtitles ? subtitleIndex : undefined}
+          routeGradId={routeGradId}
+          animateTitle={animateTitle}
+        />
+
+        {(onCancel || footerHint) && (
+          <div className="absolute bottom-6 left-0 right-0 z-20 flex items-center justify-between px-8 max-w-sm mx-auto w-full">
+            {footerHint ? (
+              <p className="text-text-muted text-xs">{footerHint}</p>
+            ) : (
+              <span />
+            )}
+            {onCancel && (
+              <button
+                type="button"
+                onClick={() => setShowCancelConfirm(true)}
+                className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-secondary transition-colors px-2 py-1 rounded-lg hover:bg-surface-2/50"
+              >
+                <X className="w-3.5 h-3.5" />
+                Cancel
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {showCancelConfirm && (
+          <motion.div
+            className="absolute inset-0 z-40 flex items-center justify-center px-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ background: 'rgb(var(--color-bg) / 0.6)', backdropFilter: 'blur(8px)' }}
+          >
+            <motion.div
+              className="w-full max-w-sm rounded-3xl border border-border p-8 text-center"
+              style={{
+                background: 'linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.98))',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+              }}
+              initial={{ scale: 0.95, y: 12 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 12 }}
+            >
+              <div className="w-14 h-14 bg-warning/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-warning/20">
+                <AlertTriangle className="w-7 h-7 text-warning" />
+              </div>
+              <h3 className="text-lg font-semibold text-text-primary mb-2">Cancel generation?</h3>
+              <p className="text-text-secondary text-sm mb-6 leading-relaxed">
+                The AI is still working on your itinerary. If you cancel, you&apos;ll return to step 2 and can try again.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <button
+                  type="button"
+                  onClick={() => setShowCancelConfirm(false)}
+                  className="btn-secondary text-sm py-2 px-5"
+                >
+                  Keep Waiting
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmCancel}
+                  className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-error border border-error/30 rounded-xl hover:bg-error/10 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

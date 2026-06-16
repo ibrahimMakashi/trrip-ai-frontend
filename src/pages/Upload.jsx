@@ -10,6 +10,7 @@ import UploadDropzone from '../components/UploadDropzone';
 import { useGeneration } from '../context/GenerationContext';
 import { uploadDocuments } from '../api/upload';
 import { generateItinerary } from '../api/itinerary';
+import TrripSpinner from '../components/TrripSpinner';
 
 const STEPS = ['Upload Documents', 'Processing', 'Generate Itinerary'];
 
@@ -172,16 +173,14 @@ export default function Upload() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
-            className="card text-center py-16"
+            className="card text-center py-12 sm:py-16"
           >
-            <div className="w-20 h-20 mx-auto mb-6 relative">
-              <div className="w-20 h-20 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <FileText className="w-8 h-8 text-primary" />
-              </div>
+            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-5 sm:mb-6 relative flex items-center justify-center">
+              <TrripSpinner size={64} />
+              <FileText className="absolute w-7 h-7 sm:w-8 sm:h-8 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold text-text-primary mb-2">Processing Documents</h3>
-            <p className="text-text-secondary mb-6">Uploading to cloud and extracting text...</p>
+            <h3 className="text-lg sm:text-xl font-semibold text-text-primary mb-2">Processing Documents</h3>
+            <p className="text-sm sm:text-base text-text-secondary mb-5 sm:mb-6">Uploading to cloud and extracting text...</p>
             <div className="max-w-xs mx-auto">
               <div className="flex justify-between text-xs text-text-muted mb-2">
                 <span>Progress</span><span>{uploadProgress}%</span>
