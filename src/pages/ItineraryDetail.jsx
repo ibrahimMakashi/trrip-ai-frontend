@@ -119,22 +119,42 @@ export default function ItineraryDetail() {
         y += 8;
 
         for (const day of itinerary.days) {
+          // If we're near the bottom, start the day on a new page for cleaner splits.
+          if (y > 255) {
+            doc.addPage();
+            y = margin;
+          }
+
+          // Day title (separate from the table so columns stay consistent)
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(30, 41, 59);
+          doc.text(`Day ${day.day}${day.date ? ` — ${day.date}` : ''}`, margin, y);
+          y += 6;
+
+          const rows = [
+            day.morning ? ['Morning', day.morning] : null,
+            day.afternoon ? ['Afternoon', day.afternoon] : null,
+            day.evening ? ['Evening', day.evening] : null,
+            day.notes ? ['Notes', day.notes] : null,
+          ].filter(Boolean);
+
           doc.autoTable({
             startY: y,
-            head: [[`Day ${day.day}${day.date ? ' — ' + day.date : ''}`]],
-            body: [
-              day.morning ? ['Morning', day.morning] : null,
-              day.afternoon ? ['Afternoon', day.afternoon] : null,
-              day.evening ? ['Evening', day.evening] : null,
-              day.notes ? ['Notes', day.notes] : null,
-            ].filter(Boolean),
+            head: [['Time', 'Details']],
+            body: rows.length ? rows : [['—', 'No details provided']],
             theme: 'grid',
-            headStyles: { fillColor: [30, 41, 59], textColor: [248, 250, 252] },
-            columnStyles: { 0: { fontStyle: 'bold', cellWidth: 30 } },
             margin: { left: margin, right: margin },
+            headStyles: { fillColor: [30, 41, 59], textColor: [248, 250, 252] },
+            styles: { fontSize: 9.5, cellPadding: 3, overflow: 'linebreak' },
+            columnStyles: {
+              0: { fontStyle: 'bold', cellWidth: 32 },
+              1: { cellWidth: 'auto' },
+            },
+            pageBreak: 'auto',
           });
-          y = doc.lastAutoTable.finalY + 6;
-          if (y > 260) { doc.addPage(); y = margin; }
+
+          y = doc.lastAutoTable.finalY + 8;
         }
       }
 
