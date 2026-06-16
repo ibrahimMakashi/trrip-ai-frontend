@@ -47,7 +47,7 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse
                 <div className="w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-glow-sm flex-shrink-0">
                   <Plane className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-lg font-bold gradient-text whitespace-nowrap">TripAI</span>
+                <span className="text-lg font-bold gradient-text whitespace-nowrap">TrripAi</span>
               </motion.div>
             ) : (
               <motion.div

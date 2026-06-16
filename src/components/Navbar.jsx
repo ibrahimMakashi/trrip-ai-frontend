@@ -18,7 +18,7 @@ export default function Navbar({ onMenuClick }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const pageInfo = pageTitles[location.pathname] || { title: 'TripAI', subtitle: '' };
+  const pageInfo = pageTitles[location.pathname] || { title: 'TrripAi', subtitle: '' };
 
   useEffect(() => {
     const handler = (e) => {

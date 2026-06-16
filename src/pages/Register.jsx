@@ -25,7 +25,7 @@ export default function Register() {
     setIsLoading(true);
     try {
       await registerUser({ name: data.name, email: data.email, password: data.password });
-      toast.success('Account created! Welcome to TripAI 🎉');
+      toast.success('Account created! Welcome to TrripAi 🎉');
       navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed. Please try again.');

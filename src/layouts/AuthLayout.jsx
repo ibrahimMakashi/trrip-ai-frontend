@@ -2,13 +2,20 @@ import { Outlet, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { Plane, Map, Globe } from 'lucide-react';
-// eslint-disable-next-line no-unused-vars
-import { useTheme } from '../context/ThemeContext';
+import AppLoader from '../components/AppLoader';
 
 export default function AuthLayout() {
   const { isAuthenticated, loading } = useAuth();
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <AppLoader
+        title="TrripAi"
+        tagline="AI Travel Planner"
+        subtitle="Your AI-powered travel planning companion"
+      />
+    );
+  }
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   return (
@@ -49,7 +56,7 @@ export default function AuthLayout() {
               <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-glow">
                 <Plane className="w-6 h-6 text-white" />
               </div>
-              <span className="text-2xl font-bold gradient-text">TripAI</span>
+              <span className="text-2xl font-bold gradient-text">TrripAi</span>
             </div>
 
             <h1 className="text-5xl font-bold text-text-primary leading-tight mb-6">
@@ -89,7 +96,7 @@ export default function AuthLayout() {
             <div className="w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
               <Plane className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold gradient-text">TripAI</span>
+            <span className="text-xl font-bold gradient-text">TrripAi</span>
           </div>
           <Outlet />
         </motion.div>
