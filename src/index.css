@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens — also set via JS on <html> for instant switching */
+@layer base {
+  :root,
+  [data-theme='dark'] {
+    --color-bg: 15 23 42;
+    --color-surface: 30 41 59;
+    --color-surface-2: 51 65 85;
+    --color-text-1: 248 250 252;
+    --color-text-2: 148 163 184;
+    --color-text-3: 100 116 139;
+    --color-border: 51 65 85;
+    color-scheme: dark;
+  }
+
+  html {
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  body {
+    background-color: rgb(var(--color-bg));
+    color: rgb(var(--color-text-1));
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  * {
+    border-color: rgb(var(--color-border));
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: rgb(var(--color-surface)); }
+  ::-webkit-scrollbar-thumb { background: rgb(var(--color-surface-2)); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-text-3)); }
+}
+
+@layer components {
+  .glass {
+    background: rgb(var(--color-surface) / 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(var(--color-border) / 0.5);
+  }
+
+  .glass-card {
+    background: rgb(var(--color-surface) / 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 1rem;
+    border: 1px solid rgb(var(--color-border) / 0.6);
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-600 text-white font-medium px-6 py-2.5 rounded-xl
+    transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+    shadow-glow-sm hover:shadow-glow;
+  }
+
+  .btn-secondary {
+    @apply bg-surface-2 hover:bg-surface text-text-primary font-medium px-6 py-2.5 rounded-xl
+    border border-border transition-all duration-200 active:scale-95
+    disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply text-text-secondary hover:text-text-primary hover:bg-surface-2 font-medium
+    px-4 py-2 rounded-xl transition-all duration-200 active:scale-95;
+  }
+
+  .input-field {
+    @apply w-full bg-surface border border-border rounded-xl px-4 py-3
+    text-text-primary placeholder-text-muted focus:outline-none
+    focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-surface border border-border rounded-2xl p-6 transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply card hover:border-primary/30 hover:shadow-glow-sm cursor-pointer;
+  }
+
+  .shimmer {
+    @apply bg-gradient-to-r from-surface via-surface-2 to-surface;
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  .page-container { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
+  .section-title { @apply text-2xl font-bold text-text-primary; }
+  .section-subtitle { @apply text-text-secondary text-sm mt-1; }
+
+  /* Dark-only app: remove light-only polish rules */
+}
